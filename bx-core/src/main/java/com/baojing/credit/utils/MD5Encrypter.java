@@ -2,8 +2,6 @@ package com.baojing.credit.utils;
 
 import java.security.MessageDigest;
 
-import com.baojing.credit.common.utils.MD5Util;
-
 /**
  * @author s10252
  * 
