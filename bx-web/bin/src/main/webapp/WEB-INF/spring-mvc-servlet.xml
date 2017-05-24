@@ -16,16 +16,10 @@
 
 
 	<!-- 启动包扫描功能，以便注册带有@Controller、@Service、@repository、@Component等注解的类成为spring的bean -->
-	<context:component-scan base-package="com.hobby.credit.web.controller">
+	<context:component-scan base-package="com.baojing.credit.web.controller">
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 		
-	<task:executor id="executor" pool-size="1" />  
-    <task:scheduler id="scheduler" pool-size="10" />  
-    <task:annotation-driven executor="executor" scheduler="scheduler" />
-    <!-- spring mvc 只会扫 controller  -->
-    <bean id="verifyNotifyJob" class="com.hobby.credit.web.job.VerifyNotifyJob"></bean>
-    
 	<mvc:annotation-driven>
 		<mvc:message-converters>
 			<bean id="stringHttpMessageConverter"
@@ -79,6 +73,13 @@
 			</props>
 		</property>
 	</bean>
+	
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+	       	<bean id="loginInterceptor" class="com.baojing.credit.web.interceptor.LoginInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
 	
 		<!-- 对静态资源的访问 /  配置对静态资源访问的  default servlet -->
 	<mvc:resources mapping="/static/**" location="/static/"/>

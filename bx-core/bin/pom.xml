@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.hobby.credit</groupId>
+    <groupId>com.baojing.credit</groupId>
     <artifactId>bx</artifactId>
     <version>1.0</version>
   </parent>
   <artifactId>bx-core</artifactId>
   <dependencies>
    		<dependency>
-   			    <groupId>com.hobby.credit</groupId>
+   			    <groupId>com.baojing.credit</groupId>
     			<artifactId>bx-base-common</artifactId>
     			<version>1.0</version>
    		</dependency>
@@ -21,6 +21,11 @@
 		  <groupId>org.apache.httpcomponents</groupId>
 		  <artifactId>httpclient</artifactId>
 		  <version>4.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		    <version>2.9.0.pr3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -85,6 +90,7 @@
 			<build>
 				<filters>
 					<filter>src/main/conf/dev/bx-core.properties</filter>
+					<filter>src/main/conf/dev/log4j.properties</filter>
 	   			</filters>
    			</build>
 		</profile>
@@ -96,6 +102,7 @@
 			<build>
 				<filters>
 					<filter>src/main/conf/sit/bx-core.properties</filter>
+					<filter>src/main/conf/sit/log4j.properties</filter>
 	   			</filters>
    			</build>
 			<properties>
@@ -109,6 +116,7 @@
 			<build>
 				<filters>
 					<filter>src/main/conf/pro/bx-core.properties</filter>
+					<filter>src/main/conf/pro/log4j.properties</filter>
 	   			</filters>
    			</build>
 			<properties>
