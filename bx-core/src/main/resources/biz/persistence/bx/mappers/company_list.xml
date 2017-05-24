@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="company_list">
+<resultMap id="company_list" type="com.baojing.credit.model.CompanyList">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="oper_name" property="operName"/>
+	<result column="address" property="address"/>
+	<result column="regist_capi" property="registCapi"/>
+	<result column="start_date" property="startDate"/>
+	<result column="status" property="status"/>
+	<result column="province" property="province"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="company_list">
+	select * 	from company_list where id=#{id}  
+</select>  
+
+<select id="findByNameLimit10" parameterType="string"  resultMap="company_list">
+	SELECT id , LTRIM(name) name , LTRIM(oper_name) oper_name , LTRIM(address) address , LTRIM(regist_capi) regist_capi, start_date , status ,LTRIM(province) province
+	 FROM company_list WHERE name LIKE CONCAT('%','${value}','%' ) limit 10
+</select>  
+
+
+<insert id="insert"  parameterType="com.baojing.credit.model.CompanyList"  useGeneratedKeys="true" keyProperty="id">
+	insert into company_list(id ,name ,oper_name ,address ,regist_capi ,start_date ,status ,province)
+   values(#{id,jdbcType=INTEGER} ,#{name,jdbcType=CHAR} ,#{operName,jdbcType=VARCHAR} ,#{address,jdbcType=VARCHAR} ,#{registCapi,jdbcType=VARCHAR} ,#{startDate,jdbcType=VARCHAR} ,#{status,jdbcType=TINYINT} ,#{province,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into company_list(id ,name ,oper_name ,address ,regist_capi ,start_date ,status ,province)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.name,jdbcType=CHAR} ,#{item.operName,jdbcType=VARCHAR} ,#{item.address,jdbcType=VARCHAR} ,#{item.registCapi,jdbcType=VARCHAR} ,#{item.startDate,jdbcType=VARCHAR} ,#{item.status,jdbcType=TINYINT} ,#{item.province,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.baojing.credit.model.CompanyList">
+	update company_list
+<set>
+	<if test="operName != null">oper_name=#{operName},</if>
+	<if test="address != null">address=#{address},</if>
+	<if test="status != null">status=#{status}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>

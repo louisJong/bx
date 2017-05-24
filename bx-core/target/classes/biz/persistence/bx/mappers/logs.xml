@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="logs">
+<resultMap id="logs" type="com.baojing.credit.model.Logs">
+	<result column="id" property="id"/>
+	<result column="username" property="username"/>
+	<result column="company_name" property="companyName"/>
+	<result column="is_pdf" property="isPdf"/>
+	<result column="is_search" property="isSearch"/>
+	<result column="visit_time" property="visitTime"/>
+	<result column="log_id" property="logId"/>
+	<result column="page" property="page"/>
+	<result column="form_name" property="formName"/>
+	<result column="user_com_name" property="userComName"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="logs">
+	select * 	from logs where id=#{id}  
+</select> 
+<select id="queryRecord" parameterType="hashmap"  resultType="hashmap">
+	select form_name formName  ,date_format( visit_time, '%Y-%m-%d %H:%i:%s' ) accessTime, company_name comName,username userName  ,IFNULL(page,0) page, user_com_name userComName
+	from logs
+	<where>
+		<if test="userName!=null and userName!=''">
+		 	username=#{userName} 
+		</if>
+		<if test="searchName!=null and searchName!=''">
+			and company_name like CONCAT('%','${searchName}','%' )
+		</if>
+		  and  (visit_time between #{startTime} and #{endTime}) order by id desc
+		 limit #{startRow} , #{limit} 
+	 </where>
+</select>
+<select id="queryCount" parameterType="hashmap"  resultType="long">
+	select count(1)
+	from logs
+	<where>
+	<if test="userName!=null and userName!=''">
+	 	username=#{userName} 
+	</if>
+	<if test="searchName!=null and searchName!=''">
+		and company_name like CONCAT('%','${searchName}','%' )
+	</if>
+	  and  (visit_time between #{startTime} and #{endTime}) 
+	  </where> 
+</select>
+<insert id="insert"  parameterType="com.baojing.credit.model.Logs"  useGeneratedKeys="true" keyProperty="id">
+	insert into logs(id ,username ,company_name ,is_pdf ,is_search ,visit_time ,log_id ,page ,form_name ,user_com_name)
+   values(#{id,jdbcType=INTEGER} ,#{username,jdbcType=VARCHAR} ,#{companyName,jdbcType=VARCHAR} ,#{isPdf,jdbcType=TINYINT} ,#{isSearch,jdbcType=TINYINT} ,#{visitTime,jdbcType=TIMESTAMP} ,#{logId,jdbcType=CHAR} ,#{page,jdbcType=INTEGER} ,#{formName,jdbcType=VARCHAR} ,#{userComName,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into logs(id ,username ,company_name ,is_pdf ,is_search ,visit_time ,log_id ,page ,form_name ,user_com_name)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.username,jdbcType=VARCHAR} ,#{item.companyName,jdbcType=VARCHAR} ,#{item.isPdf,jdbcType=TINYINT} ,#{item.isSearch,jdbcType=TINYINT} ,#{item.visitTime,jdbcType=TIMESTAMP} ,#{item.logId,jdbcType=CHAR} ,#{item.page,jdbcType=INTEGER} ,#{item.formName,jdbcType=VARCHAR} ,#{item.userComName,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.baojing.credit.model.Logs">
+	update logs
+<set>
+	<if test="companyName != null">company_name=#{companyName},</if>
+	<if test="isPdf != null">is_pdf=#{isPdf},</if>
+	<if test="isSearch != null">is_search=#{isSearch},</if>
+	<if test="visitTime != null">visit_time=#{visitTime},</if>
+	<if test="logId != null">log_id=#{logId},</if>
+	<if test="page != null">page=#{page},</if>
+	<if test="formName != null">form_name=#{formName},</if>
+	<if test="userComName != null">user_com_name=#{userComName}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>

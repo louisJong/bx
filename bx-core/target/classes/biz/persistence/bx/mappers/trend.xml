@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="trend">
+<resultMap id="trend" type="com.baojing.credit.model.Trend">
+	<result column="id" property="id"/>
+	<result column="name" property="name"/>
+	<result column="oper_name" property="operName"/>
+	<result column="address" property="address"/>
+	<result column="regist_capi" property="registCapi"/>
+	<result column="start_date" property="startDate"/>
+	<result column="status" property="status"/>
+	<result column="province" property="province"/>
+	<result column="show_count" property="showCount"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="trend">
+	select * 	from trend where id=#{id}  
+</select>  
+<select id="findLimit10"  resultMap="trend">
+	SELECT * FROM trend LIMIT 10;
+</select>  
+<insert id="insert"  parameterType="com.baojing.credit.model.Trend"  useGeneratedKeys="true" keyProperty="id">
+	insert into trend(id ,name ,oper_name ,address ,regist_capi ,start_date ,status ,province ,show_count)
+   values(#{id,jdbcType=INTEGER} ,#{name,jdbcType=CHAR} ,#{operName,jdbcType=VARCHAR} ,#{address,jdbcType=VARCHAR} ,#{registCapi,jdbcType=VARCHAR} ,#{startDate,jdbcType=VARCHAR} ,#{status,jdbcType=TINYINT} ,#{province,jdbcType=VARCHAR} ,#{showCount,jdbcType=INTEGER}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into trend(id ,name ,oper_name ,address ,regist_capi ,start_date ,status ,province ,show_count)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.name,jdbcType=CHAR} ,#{item.operName,jdbcType=VARCHAR} ,#{item.address,jdbcType=VARCHAR} ,#{item.registCapi,jdbcType=VARCHAR} ,#{item.startDate,jdbcType=VARCHAR} ,#{item.status,jdbcType=TINYINT} ,#{item.province,jdbcType=VARCHAR} ,#{item.showCount,jdbcType=INTEGER})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.baojing.credit.model.Trend">
+	update trend
+<set>
+	<if test="operName != null">oper_name=#{operName},</if>
+	<if test="address != null">address=#{address},</if>
+	<if test="registCapi != null">regist_capi=#{registCapi},</if>
+	<if test="startDate != null">start_date=#{startDate},</if>
+	<if test="status != null">status=#{status},</if>
+	<if test="province != null">province=#{province},</if>
+	<if test="showCount != null">show_count=#{showCount}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>

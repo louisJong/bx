@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="data_access_log">
+<resultMap id="data_access_log" type="com.baojing.credit.model.DataAccessLog">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="user_name" property="userName"/>
+	<result column="user_type" property="userType"/>
+	<result column="user_com_name" property="userComName"/>
+	<result column="search_com_name" property="searchComName"/>
+	<result column="data_form_name" property="dataFormName"/>
+	<result column="page_index" property="pageIndex"/>
+	<result column="create_time" property="createTime"/>
+	<result column="exception_msg" property="exceptionMsg"/>
+	<result column="data_status" property="dataStatus"/>
+	<result column="ret_msg" property="retMsg"/>
+	<result column="seach_extra_param" property="seachExtraParam"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="data_access_log">
+	select * 	from data_access_log where id=#{id}  
+</select>  
+<select id="queryRecord" parameterType="hashmap"  resultType="hashmap">
+	select log.data_form_name formName , log.seach_extra_param seachExtraParam ,date_format( log.create_time, '%Y-%m-%d %H:%i:%s' ) accessTime, log.search_com_name comName,log.user_name userName , log.user_type userType ,IFNULL(log.page_index,0) page, log.user_com_name userComName
+	from data_access_log log 
+	<choose>
+		<when test="userType =='MAIN'">
+			, user_rel_info rel 
+			where (log.user_id=#{userId} or (log.user_id = rel.sub_user_id and rel.main_user_id=#{userId}))
+		</when>
+		<otherwise>
+			where log.user_id=#{userId} and log.user_type=#{userType} 
+		</otherwise>
+	</choose>
+	<if test="searchName!=null and searchName!=''">
+		and log.search_com_name like CONCAT('%','${searchName}','%' )
+	</if>
+	 and log.data_status='success' and  (log.create_time between #{startTime} and #{endTime}) order by log.id desc
+	 limit #{startRow} , #{limit} 
+</select>
+<select id="queryAllRecord" parameterType="hashmap"  resultType="hashmap">
+	select log.data_form_name formName , log.seach_extra_param seachExtraParam , date_format( log.create_time, '%Y-%m-%d %H:%i:%s' )   accessTime, log.search_com_name comName,log.user_name userName , log.user_type userType ,IFNULL(log.page_index,0) page, log.user_com_name userComName
+	from data_access_log log 
+	<where>
+	 <if test="userCompany!=null and userCompany!=''">
+		 log.user_com_name like CONCAT('%','${userCompany}','%' )
+	 </if>
+	 <if test="searchName!=null and searchName!=''">
+		and log.search_com_name like CONCAT('%','${searchName}','%' )
+	</if>
+	 and log.data_status='success' and  log.create_time between #{startTime} and #{endTime} 
+	</where>
+	 order by id desc
+	 limit #{startRow} , #{limit} 
+</select>
+ <select id="queryAllCount" parameterType="hashmap"  resultType="long">
+	select count(1)
+	from data_access_log log 
+	<where>
+	 <if test="userCompany!=null and userCompany!=''">
+		 log.user_com_name like CONCAT('%','${userCompany}','%' )
+	 </if>
+	 <if test="searchName!=null and searchName!=''">
+		and log.search_com_name like CONCAT('%','${searchName}','%' )
+	</if>
+	   and log.data_status='success' and  log.create_time between #{startTime} and #{endTime} 
+	</where>
+</select>			
+<select id="queryCount" parameterType="hashmap"  resultType="long">
+	select count(1)
+	from data_access_log log 
+	<choose>
+		<when test="userType =='MAIN'">
+			, user_rel_info rel 
+			where (log.user_id=#{userId} or (log.user_id = rel.sub_user_id and rel.main_user_id=#{userId}))
+		</when>
+		<otherwise>
+			where log.user_id=#{userId} and log.user_type=#{userType} 
+		</otherwise>
+	</choose>
+	<if test="searchName!=null and searchName!=''">
+		and log.search_com_name  like CONCAT('%','${searchName}','%' )
+	</if>
+	    and log.data_status='success'  and (log.create_time between #{startTime} and #{endTime})
+</select>
+<insert id="insert"  parameterType="com.baojing.credit.model.DataAccessLog"  useGeneratedKeys="true" keyProperty="id">
+	insert into data_access_log(id ,user_id ,user_name ,user_type ,user_com_name ,search_com_name ,data_form_name ,page_index ,create_time ,exception_msg ,data_status ,ret_msg ,seach_extra_param)
+   values(#{id,jdbcType=INTEGER} ,#{userId,jdbcType=INTEGER} ,#{userName,jdbcType=VARCHAR} ,#{userType,jdbcType=VARCHAR} ,#{userComName,jdbcType=VARCHAR} ,#{searchComName,jdbcType=VARCHAR} ,#{dataFormName,jdbcType=VARCHAR} ,#{pageIndex,jdbcType=INTEGER} ,#{createTime,jdbcType=TIMESTAMP} ,#{exceptionMsg,jdbcType=VARCHAR} ,#{dataStatus,jdbcType=VARCHAR} ,#{retMsg,jdbcType=VARCHAR} ,#{seachExtraParam,jdbcType=VARCHAR}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into data_access_log(id ,user_id ,user_name ,user_type ,user_com_name ,search_com_name ,data_form_name ,page_index ,create_time ,exception_msg ,data_status ,ret_msg ,seach_extra_param)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.userId,jdbcType=INTEGER} ,#{item.userName,jdbcType=VARCHAR} ,#{item.userType,jdbcType=VARCHAR} ,#{item.userComName,jdbcType=VARCHAR} ,#{item.searchComName,jdbcType=VARCHAR} ,#{item.dataFormName,jdbcType=VARCHAR} ,#{item.pageIndex,jdbcType=INTEGER} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.exceptionMsg,jdbcType=VARCHAR} ,#{item.dataStatus,jdbcType=VARCHAR} ,#{item.retMsg,jdbcType=VARCHAR} ,#{item.seachExtraParam,jdbcType=VARCHAR})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.baojing.credit.model.DataAccessLog">
+	update data_access_log
+<set>
+	<if test="userId != null">user_id=#{userId},</if>
+	<if test="userName != null">user_name=#{userName},</if>
+	<if test="userType != null">user_type=#{userType},</if>
+	<if test="userComName != null">user_com_name=#{userComName},</if>
+	<if test="searchComName != null">search_com_name=#{searchComName},</if>
+	<if test="dataFormName != null">data_form_name=#{dataFormName},</if>
+	<if test="pageIndex != null">page_index=#{pageIndex},</if>
+	<if test="exceptionMsg != null">exception_msg=#{exceptionMsg},</if>
+	<if test="dataStatus != null">data_status=#{dataStatus},</if>
+	<if test="retMsg != null">ret_msg=#{retMsg}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>

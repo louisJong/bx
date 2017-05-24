@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding= "UTF-8" ?>        
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user_auth_info">
+<resultMap id="user_auth_info" type="com.baojing.credit.model.UserAuthInfo">
+	<result column="id" property="id"/>
+	<result column="user_id" property="userId"/>
+	<result column="auth_code" property="authCode"/>
+	<result column="auth_name" property="authName"/>
+	<result column="create_user" property="createUser"/>
+	<result column="create_time" property="createTime"/>
+	<result column="update_time" property="updateTime"/>
+</resultMap>
+<select id="findById" parameterType="long"  resultMap="user_auth_info">
+	select * 	from user_auth_info where id=#{id}  
+</select>  
+<insert id="insert"  parameterType="com.baojing.credit.model.UserAuthInfo"  useGeneratedKeys="true" keyProperty="id">
+	insert into user_auth_info(id ,user_id ,auth_code ,auth_name ,create_user ,create_time ,update_time)
+   values(#{id,jdbcType=INTEGER} ,#{userId,jdbcType=INTEGER} ,#{authCode,jdbcType=VARCHAR} ,#{authName,jdbcType=VARCHAR} ,#{createUser,jdbcType=VARCHAR} ,#{createTime,jdbcType=TIMESTAMP} ,#{updateTime,jdbcType=TIMESTAMP}) 
+</insert>
+<insert id="batchInsert"  parameterType="list">
+	insert into user_auth_info(id ,user_id ,auth_code ,auth_name ,create_user ,create_time ,update_time)
+   values
+	<foreach collection="list" item="item" index="index"   separator=","> 
+    (#{item.id,jdbcType=INTEGER} ,#{item.userId,jdbcType=INTEGER} ,#{item.authCode,jdbcType=VARCHAR} ,#{item.authName,jdbcType=VARCHAR} ,#{item.createUser,jdbcType=VARCHAR} ,#{item.createTime,jdbcType=TIMESTAMP} ,#{item.updateTime,jdbcType=TIMESTAMP})
+	</foreach> 
+</insert>
+<update id="update"	parameterType="com.baojing.credit.model.UserAuthInfo">
+	update user_auth_info
+<set>
+	<if test="userId != null">user_id=#{userId},</if>
+	<if test="authCode != null">auth_code=#{authCode},</if>
+	<if test="authName != null">auth_name=#{authName},</if>
+	<if test="updateTime != null">update_time=#{updateTime}</if>
+</set>
+	where id=#{id}
+</update>
+</mapper>
